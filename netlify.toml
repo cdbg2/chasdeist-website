@@ -1,0 +1,3 @@
+[build]
+  publish = "My Website"
+  ignore = "exit 1"
