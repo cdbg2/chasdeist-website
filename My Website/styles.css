@@ -186,6 +186,11 @@ footer {
     border-top: 1px solid #eee;
 }
 
+.copyright {
+    font-size: 14px;
+    color: #999;
+}
+
 .footer-links {
     display: flex;
     justify-content: center;
@@ -341,6 +346,10 @@ footer {
 
     footer {
         border-top-color: #333;
+    }
+
+    .copyright {
+        color: #666;
     }
 
     .footer-links a {
