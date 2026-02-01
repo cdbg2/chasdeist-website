@@ -27,6 +27,7 @@ header {
 .profile-link {
     display: inline-block;
     margin-bottom: 20px;
+    cursor: pointer;
 }
 
 .profile-image {
@@ -34,6 +35,11 @@ header {
     height: 80px;
     border-radius: 50%;
     object-fit: cover;
+    transition: transform 0.15s ease;
+}
+
+.profile-link:hover .profile-image {
+    transform: scale(1.05);
 }
 
 h1 {
@@ -121,6 +127,8 @@ nav a:hover {
     font-family: inherit;
     font-size: 16px;
     transition: border-color 0.15s ease;
+    background-color: #fff;
+    color: #1a1a1a;
 }
 
 .form-group input:focus,
@@ -151,6 +159,26 @@ nav a:hover {
     background-color: #333;
 }
 
+.contact-form button:disabled {
+    background-color: #666;
+    cursor: not-allowed;
+}
+
+/* Form Status Messages */
+.form-status {
+    text-align: center;
+    font-size: 15px;
+    min-height: 24px;
+}
+
+.form-status.success {
+    color: #2e7d32;
+}
+
+.form-status.error {
+    color: #c62828;
+}
+
 /* Footer */
 footer {
     text-align: center;
@@ -175,6 +203,45 @@ footer {
     color: #1a1a1a;
 }
 
+/* Photo Lightbox Modal */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.85);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+    z-index: 1000;
+    cursor: pointer;
+}
+
+.modal-overlay.active {
+    opacity: 1;
+    visibility: visible;
+}
+
+.modal-content {
+    transform: scale(0.9);
+    transition: transform 0.3s ease;
+}
+
+.modal-overlay.active .modal-content {
+    transform: scale(1);
+}
+
+.modal-image {
+    max-width: 90vw;
+    max-height: 90vh;
+    border-radius: 8px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+}
+
 /* Responsive */
 @media (max-width: 480px) {
     body {
@@ -195,5 +262,92 @@ footer {
 
     .bio {
         font-size: 16px;
+    }
+}
+
+/* Dark Mode */
+@media (prefers-color-scheme: dark) {
+    body {
+        background-color: #1a1a1a;
+        color: #f0f0f0;
+    }
+
+    h1 {
+        color: #f0f0f0;
+    }
+
+    nav a {
+        color: #999;
+    }
+
+    nav a:hover {
+        color: #fff;
+    }
+
+    .bio {
+        color: #f0f0f0;
+    }
+
+    .divider {
+        color: #444;
+    }
+
+    .contact-section h2 {
+        color: #f0f0f0;
+    }
+
+    .form-group label {
+        color: #999;
+    }
+
+    .form-group input,
+    .form-group textarea {
+        background-color: #2a2a2a;
+        border-color: #444;
+        color: #f0f0f0;
+    }
+
+    .form-group input:focus,
+    .form-group textarea:focus {
+        border-color: #888;
+    }
+
+    .form-group input::placeholder,
+    .form-group textarea::placeholder {
+        color: #666;
+    }
+
+    .contact-form button {
+        background-color: #f0f0f0;
+        color: #1a1a1a;
+    }
+
+    .contact-form button:hover {
+        background-color: #ddd;
+    }
+
+    .contact-form button:disabled {
+        background-color: #666;
+        color: #999;
+    }
+
+    .form-status.success {
+        color: #66bb6a;
+    }
+
+    .form-status.error {
+        color: #ef5350;
+    }
+
+    footer {
+        border-top-color: #333;
+    }
+
+    .footer-links a {
+        color: #999;
+    }
+
+    .footer-links a:hover {
+        color: #fff;
     }
 }

@@ -13,19 +13,20 @@
 <body>
     <div class="container">
         <header>
-            <a href="/" class="profile-link">
+            <a href="/" class="profile-link" id="profile-trigger">
                 <img src="Chas Deist profile photo copy grey background.jpg" alt="Chas Deist" class="profile-image">
             </a>
             <h1>Chas Deist</h1>
             <nav>
                 <a href="#about">About</a>
                 <a href="#contact">Contact</a>
+                <a href="https://www.linkedin.com/in/chasdeist/" target="_blank" rel="noopener noreferrer">LinkedIn</a>
             </nav>
         </header>
 
         <main>
             <section id="about" class="about-section">
-                <p class="bio">I'm a digital marketing professional, lead generation specialist, e-commerce strategist, Gator alum, and New Yorker.</p>
+                <p class="bio">I'm a digital marketing professional with extensive experience in lead generation, e-commerce, and consumer Internet businesses. University of Florida alum living in NYC.</p>
             </section>
 
             <div class="divider">* * *</div>
@@ -33,7 +34,7 @@
             <section id="contact" class="contact-section">
                 <h2>Get in Touch</h2>
 
-                <form class="contact-form" action="https://formspree.io/f/xlglrobq" method="POST">
+                <form class="contact-form" id="contact-form" action="https://formspree.io/f/xlglrobq" method="POST">
                     <div class="form-group">
                         <label for="name">Name</label>
                         <input type="text" id="name" name="name" required>
@@ -46,16 +47,85 @@
                         <label for="message">Message</label>
                         <textarea id="message" name="message" rows="4" required></textarea>
                     </div>
-                    <button type="submit">Send Message</button>
+                    <button type="submit" id="submit-btn">Send Message</button>
+                    <div class="form-status" id="form-status"></div>
                 </form>
             </section>
         </main>
 
         <footer>
-            <div class="footer-links">
-                <a href="https://www.linkedin.com/in/chasdeist/" target="_blank" rel="noopener noreferrer">LinkedIn</a>
-            </div>
         </footer>
     </div>
+
+    <!-- Photo Lightbox Modal -->
+    <div class="modal-overlay" id="photo-modal">
+        <div class="modal-content">
+            <img src="Chas Deist profile photo copy grey background.jpg" alt="Chas Deist" class="modal-image">
+        </div>
+    </div>
+
+    <script>
+        // Photo Lightbox
+        const profileTrigger = document.getElementById('profile-trigger');
+        const photoModal = document.getElementById('photo-modal');
+
+        profileTrigger.addEventListener('click', function(e) {
+            e.preventDefault();
+            photoModal.classList.add('active');
+        });
+
+        photoModal.addEventListener('click', function(e) {
+            if (e.target === photoModal) {
+                photoModal.classList.remove('active');
+            }
+        });
+
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape' && photoModal.classList.contains('active')) {
+                photoModal.classList.remove('active');
+            }
+        });
+
+        // Formspree AJAX Submission
+        const contactForm = document.getElementById('contact-form');
+        const submitBtn = document.getElementById('submit-btn');
+        const formStatus = document.getElementById('form-status');
+
+        contactForm.addEventListener('submit', async function(e) {
+            e.preventDefault();
+
+            const originalText = submitBtn.textContent;
+            submitBtn.textContent = 'Sending...';
+            submitBtn.disabled = true;
+            formStatus.className = 'form-status';
+            formStatus.textContent = '';
+
+            const formData = new FormData(contactForm);
+
+            try {
+                const response = await fetch(contactForm.action, {
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'Accept': 'application/json'
+                    }
+                });
+
+                if (response.ok) {
+                    formStatus.textContent = 'Message sent!';
+                    formStatus.classList.add('success');
+                    contactForm.reset();
+                } else {
+                    throw new Error('Form submission failed');
+                }
+            } catch (error) {
+                formStatus.textContent = 'Something went wrong. Please try again.';
+                formStatus.classList.add('error');
+            } finally {
+                submitBtn.textContent = originalText;
+                submitBtn.disabled = false;
+            }
+        });
+    </script>
 </body>
 </html>
