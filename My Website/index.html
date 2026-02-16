@@ -4,7 +4,18 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Chas Deist</title>
-    <link rel="icon" type="image/jpeg" href="Chas Deist profile photo copy grey background.jpg">
+    <meta name="description" content="Chas Deist — digital marketing professional specializing in lead generation, e-commerce, and consumer Internet businesses. Based in NYC.">
+    <link rel="canonical" href="https://chasdeist.com">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://chasdeist.com">
+    <meta property="og:title" content="Chas Deist">
+    <meta property="og:description" content="Digital marketing professional specializing in lead generation, e-commerce, and consumer Internet businesses. Based in NYC.">
+    <meta property="og:image" content="https://chasdeist.com/chas-deist-profile.jpg">
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="Chas Deist">
+    <meta name="twitter:description" content="Digital marketing professional specializing in lead generation, e-commerce, and consumer Internet businesses. Based in NYC.">
+    <meta name="twitter:image" content="https://chasdeist.com/chas-deist-profile.jpg">
+    <link rel="icon" type="image/jpeg" href="chas-deist-profile.jpg">
     <link rel="stylesheet" href="styles.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -13,8 +24,8 @@
 <body>
     <div class="container">
         <header>
-            <a href="/" class="profile-link" id="profile-trigger">
-                <img src="Chas Deist profile photo copy grey background.jpg" alt="Chas Deist" class="profile-image">
+            <a href="/" class="profile-link" id="profile-trigger" aria-label="View full profile photo">
+                <img src="chas-deist-profile.jpg" alt="Chas Deist" class="profile-image">
             </a>
             <h1>Chas Deist</h1>
             <nav>
@@ -59,9 +70,10 @@
     </div>
 
     <!-- Photo Lightbox Modal -->
-    <div class="modal-overlay" id="photo-modal">
+    <div class="modal-overlay" id="photo-modal" role="dialog" aria-modal="true" aria-label="Profile photo">
+        <button class="modal-close" id="modal-close" aria-label="Close photo">×</button>
         <div class="modal-content">
-            <img src="Chas Deist profile photo copy grey background.jpg" alt="Chas Deist" class="modal-image">
+            <img src="chas-deist-profile.jpg" alt="Chas Deist" class="modal-image">
         </div>
     </div>
 
@@ -69,21 +81,30 @@
         // Photo Lightbox
         const profileTrigger = document.getElementById('profile-trigger');
         const photoModal = document.getElementById('photo-modal');
+        const modalClose = document.getElementById('modal-close');
 
         profileTrigger.addEventListener('click', function(e) {
             e.preventDefault();
             photoModal.classList.add('active');
+            modalClose.focus();
+        });
+
+        modalClose.addEventListener('click', function() {
+            photoModal.classList.remove('active');
+            profileTrigger.focus();
         });
 
         photoModal.addEventListener('click', function(e) {
             if (e.target === photoModal) {
                 photoModal.classList.remove('active');
+                profileTrigger.focus();
             }
         });
 
         document.addEventListener('keydown', function(e) {
             if (e.key === 'Escape' && photoModal.classList.contains('active')) {
                 photoModal.classList.remove('active');
+                profileTrigger.focus();
             }
         });
 
