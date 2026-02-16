@@ -240,6 +240,25 @@ footer {
     transform: scale(1);
 }
 
+.modal-close {
+    position: fixed;
+    top: 20px;
+    right: 24px;
+    background: none;
+    border: none;
+    color: #fff;
+    font-size: 36px;
+    line-height: 1;
+    cursor: pointer;
+    opacity: 0.8;
+    transition: opacity 0.15s ease;
+    z-index: 1001;
+}
+
+.modal-close:hover {
+    opacity: 1;
+}
+
 .modal-image {
     max-width: 90vw;
     max-height: 90vh;
