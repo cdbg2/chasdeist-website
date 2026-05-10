@@ -21,7 +21,7 @@ Your laptop does not need to be on.
 
 ## Required GitHub Secrets
 
-- `FEEDLY_OPML_B64`: base64-encoded Feedly OPML export.
+- `FEEDLY_OPML_GZ_B64`: gzip-compressed, base64-encoded Feedly OPML export.
 - `SAVE_TO_SPOTIFY_TOKEN_JSON_B64`: base64-encoded Save to Spotify token JSON.
 - `SAVE_TO_SPOTIFY_SHOW_ID`: optional but recommended. If set, uploads always
   target the existing `Chas's PPC Daily Brief` show.

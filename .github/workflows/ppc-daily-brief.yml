@@ -31,14 +31,14 @@ jobs:
 
       - name: Restore Feedly OPML and Spotify token
         env:
-          FEEDLY_OPML_B64: ${{ secrets.FEEDLY_OPML_B64 }}
+          FEEDLY_OPML_GZ_B64: ${{ secrets.FEEDLY_OPML_GZ_B64 }}
           SAVE_TO_SPOTIFY_TOKEN_JSON_B64: ${{ secrets.SAVE_TO_SPOTIFY_TOKEN_JSON_B64 }}
         run: |
-          test -n "$FEEDLY_OPML_B64" || { echo "Missing FEEDLY_OPML_B64 secret"; exit 1; }
+          test -n "$FEEDLY_OPML_GZ_B64" || { echo "Missing FEEDLY_OPML_GZ_B64 secret"; exit 1; }
           test -n "$SAVE_TO_SPOTIFY_TOKEN_JSON_B64" || { echo "Missing SAVE_TO_SPOTIFY_TOKEN_JSON_B64 secret"; exit 1; }
 
           mkdir -p "$HOME/.config/save-to-spotify" ppc_daily_brief
-          printf '%s' "$FEEDLY_OPML_B64" | base64 --decode > ppc_daily_brief/subscriptions.opml
+          printf '%s' "$FEEDLY_OPML_GZ_B64" | base64 --decode | gzip -dc > ppc_daily_brief/subscriptions.opml
           printf '%s' "$SAVE_TO_SPOTIFY_TOKEN_JSON_B64" | base64 --decode > "$HOME/.config/save-to-spotify/token.json"
           chmod 600 "$HOME/.config/save-to-spotify/token.json"
 

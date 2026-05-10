@@ -38,14 +38,34 @@ function Set-SecretFromFileBase64 {
   Assert-LastExitCode "gh secret set $SecretName"
 }
 
+function Set-SecretFromGzipBase64 {
+  param(
+    [string]$SecretName,
+    [string]$Path
+  )
+
+  if (!(Test-Path -LiteralPath $Path)) {
+    throw "File not found: $Path"
+  }
+
+  $bytes = [System.IO.File]::ReadAllBytes($Path)
+  $output = New-Object System.IO.MemoryStream
+  $gzip = New-Object System.IO.Compression.GZipStream($output, [System.IO.Compression.CompressionLevel]::Optimal)
+  $gzip.Write($bytes, 0, $bytes.Length)
+  $gzip.Dispose()
+  $encoded = [Convert]::ToBase64String($output.ToArray())
+  $encoded | gh secret set $SecretName --repo $Repo
+  Assert-LastExitCode "gh secret set $SecretName"
+}
+
 Assert-Command "gh"
 
 Write-Host "Checking GitHub CLI authentication..."
 gh auth status | Out-Host
 Assert-LastExitCode "gh auth status"
 
-Write-Host "Setting FEEDLY_OPML_B64..."
-Set-SecretFromFileBase64 -SecretName "FEEDLY_OPML_B64" -Path $OpmlPath
+Write-Host "Setting FEEDLY_OPML_GZ_B64..."
+Set-SecretFromGzipBase64 -SecretName "FEEDLY_OPML_GZ_B64" -Path $OpmlPath
 
 Write-Host "Setting SAVE_TO_SPOTIFY_TOKEN_JSON_B64..."
 Set-SecretFromFileBase64 -SecretName "SAVE_TO_SPOTIFY_TOKEN_JSON_B64" -Path $TokenPath
