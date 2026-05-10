@@ -15,6 +15,13 @@ function Assert-Command {
   }
 }
 
+function Assert-LastExitCode {
+  param([string]$CommandName)
+  if ($LASTEXITCODE -ne 0) {
+    throw "$CommandName failed with exit code $LASTEXITCODE"
+  }
+}
+
 function Set-SecretFromFileBase64 {
   param(
     [string]$SecretName,
@@ -27,13 +34,15 @@ function Set-SecretFromFileBase64 {
 
   $bytes = [System.IO.File]::ReadAllBytes($Path)
   $encoded = [Convert]::ToBase64String($bytes)
-  $encoded | gh secret set $SecretName --repo $Repo --body-file -
+  $encoded | gh secret set $SecretName --repo $Repo
+  Assert-LastExitCode "gh secret set $SecretName"
 }
 
 Assert-Command "gh"
 
 Write-Host "Checking GitHub CLI authentication..."
 gh auth status | Out-Host
+Assert-LastExitCode "gh auth status"
 
 Write-Host "Setting FEEDLY_OPML_B64..."
 Set-SecretFromFileBase64 -SecretName "FEEDLY_OPML_B64" -Path $OpmlPath
@@ -51,7 +60,8 @@ if (Test-Path -LiteralPath $CliPath) {
       $showId = $matches[0].uri
       if (!$showId) { $showId = $matches[0].id }
       if ($showId) {
-        $showId | gh secret set SAVE_TO_SPOTIFY_SHOW_ID --repo $Repo --body-file -
+        $showId | gh secret set SAVE_TO_SPOTIFY_SHOW_ID --repo $Repo
+        Assert-LastExitCode "gh secret set SAVE_TO_SPOTIFY_SHOW_ID"
         Write-Host "Set SAVE_TO_SPOTIFY_SHOW_ID to $showId"
       } else {
         Write-Warning "Found the show but could not identify its URI/ID. The workflow will use the CLI default show."
