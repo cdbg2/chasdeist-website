@@ -55,7 +55,14 @@ if (Test-Path -LiteralPath $CliPath) {
   try {
     $showsJson = & $CliPath --json shows
     $shows = $showsJson | ConvertFrom-Json
-    $matches = @($shows | Where-Object { $_.title -eq $ShowTitle -or $_.name -eq $ShowTitle })
+    if ($shows.shows) {
+      $showsList = @($shows.shows)
+    } elseif ($shows.items) {
+      $showsList = @($shows.items)
+    } else {
+      $showsList = @($shows)
+    }
+    $matches = @($showsList | Where-Object { $_.title -eq $ShowTitle -or $_.name -eq $ShowTitle })
     if ($matches.Count -gt 0) {
       $showId = $matches[0].uri
       if (!$showId) { $showId = $matches[0].id }
