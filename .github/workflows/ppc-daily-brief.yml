@@ -1,0 +1,85 @@
+name: PPC Daily Brief
+
+on:
+  workflow_dispatch:
+  schedule:
+    # Weekdays at 6:00 AM New York time during daylight saving time.
+    # GitHub cron is UTC, so this runs at 5:00 AM New York time during standard time.
+    - cron: "0 10 * * 1-5"
+
+jobs:
+  build-and-upload:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install Python dependencies
+        run: python -m pip install -r automation/requirements.txt
+
+      - name: Install Save to Spotify
+        run: |
+          curl -fsSL https://saveto.spotify.com/install.sh | bash -s -- --no-skills
+          echo "$HOME/.local/bin" >> "$GITHUB_PATH"
+
+      - name: Restore Feedly OPML and Spotify token
+        env:
+          FEEDLY_OPML_B64: ${{ secrets.FEEDLY_OPML_B64 }}
+          SAVE_TO_SPOTIFY_TOKEN_JSON_B64: ${{ secrets.SAVE_TO_SPOTIFY_TOKEN_JSON_B64 }}
+        run: |
+          test -n "$FEEDLY_OPML_B64" || { echo "Missing FEEDLY_OPML_B64 secret"; exit 1; }
+          test -n "$SAVE_TO_SPOTIFY_TOKEN_JSON_B64" || { echo "Missing SAVE_TO_SPOTIFY_TOKEN_JSON_B64 secret"; exit 1; }
+
+          mkdir -p "$HOME/.config/save-to-spotify" ppc_daily_brief
+          printf '%s' "$FEEDLY_OPML_B64" | base64 --decode > ppc_daily_brief/subscriptions.opml
+          printf '%s' "$SAVE_TO_SPOTIFY_TOKEN_JSON_B64" | base64 --decode > "$HOME/.config/save-to-spotify/token.json"
+          chmod 600 "$HOME/.config/save-to-spotify/token.json"
+
+      - name: Generate daily brief
+        run: |
+          python automation/generate_ppc_daily_brief.py \
+            --opml ppc_daily_brief/subscriptions.opml \
+            --out-dir ppc_daily_brief \
+            --voice en-US-AriaNeural
+
+      - name: Upload to Spotify
+        env:
+          SAVE_TO_SPOTIFY_SHOW_ID: ${{ secrets.SAVE_TO_SPOTIFY_SHOW_ID }}
+        run: |
+          title="PPC Daily Brief - $(TZ=America/New_York date '+%B %-d, %Y')"
+          summary="$(cat ppc_daily_brief/episode_summary.md)"
+
+          args=(
+            --json upload ppc_daily_brief/chas_ppc_daily_brief.mp3
+            --title "$title"
+            --summary "$summary"
+            --image ppc_daily_brief/cover.jpg
+            --language en
+          )
+
+          if [ -n "$SAVE_TO_SPOTIFY_SHOW_ID" ]; then
+            args+=(--show-id "$SAVE_TO_SPOTIFY_SHOW_ID")
+          fi
+
+          save-to-spotify "${args[@]}"
+
+      - name: Upload run artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ppc-daily-brief-${{ github.run_id }}
+          path: |
+            ppc_daily_brief/*.json
+            ppc_daily_brief/*.md
+            ppc_daily_brief/*.txt
+            ppc_daily_brief/*.srt
+            ppc_daily_brief/*.jpg
+            ppc_daily_brief/*.mp3
+          retention-days: 14
