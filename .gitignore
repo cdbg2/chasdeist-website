@@ -1,0 +1,20 @@
+# This repo publishes My Website/ only. Everything below shares the same
+# folder on disk but is unrelated to the site -- keep it out of the repo,
+# which is public.
+
+# Unrelated projects
+/Misc/
+/Sports/
+/feedly-cleanup/
+/leave-now-nyc/
+/Lotto Scratchers/
+/insurify-sem-competitive-brief.md
+
+# Tooling scratch and machine-local settings (matches at any depth)
+.claude/
+.codex-tmp/
+
+# OS cruft
+Thumbs.db
+desktop.ini
+.DS_Store
